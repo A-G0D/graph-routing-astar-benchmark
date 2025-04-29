@@ -1,12 +1,18 @@
-"""Dijkstra over the Graph type. Counts node expansions as the effort metric."""
+"""Dijkstra and A* over the Graph type.
+
+Both share a binary-heap frontier and count node expansions (pops that relax
+neighbours) as the effort metric. Priority ties break on insertion order, which
+keeps the expansion order deterministic.
+"""
 from __future__ import annotations
 
 import heapq
 import math
 from dataclasses import dataclass, field
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from .graph import Graph, Node
+from .heuristics import Heuristic, zero
 
 
 @dataclass
@@ -72,8 +78,53 @@ def dijkstra(g: Graph, start: Node, goal: Node) -> SearchResult:
     return SearchResult(path=path, cost=cost, expanded=expanded, frontier_peak=peak)
 
 
+def astar(
+    g: Graph,
+    start: Node,
+    goal: Node,
+    heuristic: Optional[Heuristic] = None,
+) -> SearchResult:
+    """A* with priority g + h. Defaults to the zero heuristic, i.e. Dijkstra."""
+    if start not in g.adj or goal not in g.adj:
+        raise KeyError("start and goal must be nodes in the graph")
+    h = heuristic or zero
+
+    g_score: Dict[Node, float] = {start: 0.0}
+    came_from: Dict[Node, Node] = {}
+    visited: set[Node] = set()
+    counter = 0
+    f0 = h(start, goal, g)
+    frontier: List[tuple] = [(f0, 0, start)]
+    expanded = 0
+    peak = 1
+
+    while frontier:
+        _, _, u = heapq.heappop(frontier)
+        if u in visited:
+            continue
+        visited.add(u)
+        if u == goal:
+            break
+        expanded += 1
+        gu = g_score[u]
+        for v, w in g.neighbors(u):
+            if v in visited:
+                continue
+            tentative = gu + w
+            if tentative < g_score.get(v, math.inf):
+                g_score[v] = tentative
+                came_from[v] = u
+                counter += 1
+                heapq.heappush(frontier, (tentative + h(v, goal, g), counter, v))
+        peak = max(peak, len(frontier))
+
+    path = _reconstruct(came_from, start, goal)
+    cost = g_score.get(goal, math.inf) if path or start == goal else math.inf
+    return SearchResult(path=path, cost=cost, expanded=expanded, frontier_peak=peak)
+
+
 def path_cost(g: Graph, path: List[Node]) -> float:
-    """Sum the edge weights along path (validates adjacency)."""
+    """Sum the edge weights along ``path`` (validates adjacency)."""
     if not path:
         return math.inf
     total = 0.0
