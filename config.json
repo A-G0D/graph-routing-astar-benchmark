@@ -1,0 +1,27 @@
+{
+  "seed": 913,
+  "queries": 200,
+  "heuristic": "euclidean",
+  "graphs": [
+    {
+      "name": "city-grid-open",
+      "kind": "grid",
+      "width": 40,
+      "height": 40,
+      "obstacle_ratio": 0.0
+    },
+    {
+      "name": "city-grid-obstacles",
+      "kind": "grid",
+      "width": 40,
+      "height": 40,
+      "obstacle_ratio": 0.18,
+      "weight_jitter": 0.15
+    },
+    {
+      "name": "random-geometric",
+      "kind": "random",
+      "n": 600
+    }
+  ]
+}
