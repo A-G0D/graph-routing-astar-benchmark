@@ -1,0 +1,26 @@
+{
+  "queries": 200,
+  "optimal_fraction": 1.0,
+  "mean_cost_ratio": 1.0,
+  "max_cost_ratio": 1.0,
+  "expansion_ratio": 0.026945866094060286,
+  "speedup": 9.331315213342599,
+  "baseline": {
+    "strategy": "dijkstra",
+    "mean_expanded": 309.695,
+    "mean_latency_ms": 6.719195499899797,
+    "mean_frontier_peak": 341.985,
+    "queries": 200
+  },
+  "improved": {
+    "strategy": "astar",
+    "mean_expanded": 8.345,
+    "mean_latency_ms": 0.7200695021310821,
+    "mean_frontier_peak": 172.115,
+    "queries": 200
+  },
+  "notes": [
+    "a* matched dijkstra on every reachable query",
+    "a* expanded 97.3% fewer nodes on average"
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "seed": 913,
+  "graphs": [
+    {
+      "name": "city-grid-open",
+      "nodes": 1600,
+      "edges": 3120,
+      "optimal_fraction": 1.0,
+      "expansion_ratio": 0.27228984224336883,
+      "speedup": 2.5645203670832264
+    },
+    {
+      "name": "city-grid-obstacles",
+      "nodes": 1314,
+      "edges": 2105,
+      "optimal_fraction": 1.0,
+      "expansion_ratio": 0.20070293850065707,
+      "speedup": 3.5095361860302328
+    },
+    {
+      "name": "random-geometric",
+      "nodes": 600,
+      "edges": 16346,
+      "optimal_fraction": 1.0,
+      "expansion_ratio": 0.026945866094060286,
+      "speedup": 9.331315213342599
+    }
+  ]
+}
