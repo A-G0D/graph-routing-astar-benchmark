@@ -1,6 +1,6 @@
 {
   "seed": 913,
-  "queries": 100,
+  "queries": 200,
   "heuristic": "euclidean",
   "graphs": [
     {
