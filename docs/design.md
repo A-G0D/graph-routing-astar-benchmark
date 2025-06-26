@@ -24,5 +24,6 @@ leftover components together with the shortest cross-component edges.
 ## search
 
 `dijkstra` and `astar` share a binary-heap frontier and the same lazy-deletion
-trick. Both report `expanded`, which is the metric I use to compare search
-effort across the two.
+trick. Ties break on a monotonic insertion counter, so the expansion order is
+deterministic. Both report `expanded` (nodes popped and relaxed), which is the
+metric I use to compare search effort across the two.
