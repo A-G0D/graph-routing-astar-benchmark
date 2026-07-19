@@ -23,12 +23,44 @@ shared/         logging + seeding helpers
 config.json     graphs + query count + seed
 ```
 
+```mermaid
+flowchart LR
+    cfg["config.json<br/>graphs, seed, query count"] --> build["build_graph<br/>grid_graph / random_connected_graph"]
+    build --> sample["sample_queries<br/>random start/goal pairs"]
+    sample --> planA["Planner, strategy dijkstra"]
+    sample --> planB["Planner, strategy astar"]
+    planA --> compare["compare<br/>optimality, cost ratio, expansion ratio, speedup"]
+    planB --> compare
+    planA -.-> log["logs/benchmark.jsonl"]
+    planB -.-> log
+    compare --> reports["write_reports"]
+    reports --> jsonOut["eval/comparison.json"]
+    reports --> mdOut["eval/COMPARISON.md"]
+```
+
 ## running it
 
 ```
 python -m pytest -q          # tests
 python eval/run_benchmark.py # build graphs, route queries, write eval artifacts
 ```
+
+## demonstration
+
+Running the benchmark against the graphs in `config.json`:
+
+```
+$ python eval/run_benchmark.py
+[city-grid-open] nodes=1600 edges=3120 optimal=100.0% expansion_ratio=0.272 speedup=2.56x
+[city-grid-obstacles] nodes=1314 edges=2105 optimal=100.0% expansion_ratio=0.201 speedup=3.51x
+[random-geometric] nodes=600 edges=16346 optimal=100.0% expansion_ratio=0.027 speedup=9.33x
+wrote artifacts to /path/to/repo/eval
+```
+
+That's the actual output from `eval/summary.json` in this repo. A* matches Dijkstra's
+optimal cost on every query across all three graphs and expands anywhere from 73% to
+97% fewer nodes doing it, with the biggest win on the dense random geometric graph where
+the euclidean heuristic has the most room to steer the search.
 
 ## the two strategies
 
@@ -45,3 +77,11 @@ smaller but still clear win. Numbers in [`eval/COMPARISON.md`](eval/COMPARISON.m
 
 See [`docs/design.md`](docs/design.md) for the data model and a couple of design
 notes.
+
+## writing hygiene
+
+`scripts/check_prose.py` is a small stdlib-only linter that scans tracked markdown
+and Python files for em-dashes, employer/internal-tool references, and stray XML
+tags that sometimes leak in from AI tool output. Run it with
+`python scripts/check_prose.py`. It's not wired into CI or a git hook, just a
+manual check.
